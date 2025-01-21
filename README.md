@@ -1,2 +1,2 @@
-# livewire-data-table
-This package provides a html/blade centric data table approach leveraging Livewire's reactiveness for a great UX
+# laravel-raw-blade-components
+Provides the possibility to create and use blade components syntax with arbitrary code
