@@ -3,13 +3,18 @@
 namespace ErickComp\RawBladeComponents;
 
 use Illuminate\Support\Collection;
-use \Illuminate\Support\ServiceProvider;
 use Illuminate\View\Compilers\ComponentTagCompiler;
 
-class RawComponentsManager extends ServiceProvider
+class RawComponentsManager
 {
     protected Collection $rawComponents;
     protected Collection $rawComponentsStartingWith;
+
+    public function __construct()
+    {
+        $this->rawComponents = new Collection();
+        $this->rawComponentsStartingWith = new Collection();
+    }
 
     public function hasRegisteredRawComponents(): bool
     {
@@ -55,45 +60,133 @@ class RawComponentsManager extends ServiceProvider
         return $this;
     }
 
-    public function compileRawBladeComponents(string $templateStr)
+    public function compileRawBladeComponents(string $templateStr): string
     {
-        // $templateStr = $this->compileSelfClosingTags($templateStr);
-        // $templateStr = $this->compileOpeningTags($templateStr);
-        // $templateStr = $this->compileClosingTags($templateStr);
-
-        // return $templateStr;
-
         $patterns = [
-            $this->rawComponentSelfClosingTagRegex(),
-            $this->rawComponentOpeningTagRegex(),
-            $this->rawComponentClosingTagRegex(),
-        ];
-
-        $callbacks = [
-            $this->rawComponentSelfClosingTagCompiler(),
-            $this->rawComponentOpeningTagCompiler(),
-            $this->rawComponentClosingTagCompiler(),
+            $this->rawComponentSelfClosingTagRegex() => $this->rawComponentSelfClosingTagCompiler(...),
+            $this->rawComponentOpeningTagRegex() => $this->rawComponentOpeningTagCompiler(...),
+            $this->rawComponentClosingTagRegex() => $this->rawComponentClosingTagCompiler(...),
         ];
 
         return \preg_replace_callback_array(
             $patterns,
             $templateStr,
-            $callbacks,
         );
     }
 
-    protected function rawComponentOpeningTagCompiler(string $templateStr): string {}
+    protected function rawComponentOpeningTagCompiler(array $match): string
+    {
+        $componentTag = $match['componenttag'];
 
-    protected function rawComponentClosingTagCompiler(string $templateStr): string {}
+        if ($this->rawComponents->has($componentTag)) {
+            $attributes = $this->getAttributesFromAttributeString($match['attributes']);
 
-    protected function rawComponentSelfClosingTagCompiler(string $templateStr): string {}
+            return '<?php ' . PHP_EOL
+                . '$__previousRawComponentAttributes = $__rawComponentAttributes ?? new \\Illuminate\\View\\ComponentAttributeBag([]);' . PHP_EOL
+                . '$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([' . $this->componentAttributesToString($attributes) . ']);' . PHP_EOL
+                . '$__rawComponentTag = \'' . $componentTag . '\';' . PHP_EOL
+                . '?>' . PHP_EOL
+                . $this->rawComponents[$componentTag]->openingCode;
+        }
+
+        foreach ($this->rawComponentsStartingWith as $componentStartingWith => $rawComponent) {
+            if (\str_starts_with($componentTag, $componentStartingWith)) {
+                $attributes = $this->getAttributesFromAttributeString($match['attributes']);
+
+                return '<?php ' . PHP_EOL
+                    . '$__previousRawComponentAttributes = $__rawComponentAttributes ?? new \\Illuminate\\View\\ComponentAttributeBag([]);' . PHP_EOL
+                    . '$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([' . $this->componentAttributesToString($attributes) . ']);' . PHP_EOL
+                    . '$__rawComponentTag = \'' . $componentTag . '\';' . PHP_EOL
+                    . '?>' . PHP_EOL
+                    . $rawComponent->openingCode;
+            }
+        }
+
+        return $match[0];
+    }
+
+    protected function rawComponentClosingTagCompiler(array $match): string
+    {
+        $componentTag = $match['componenttag'];
+
+        if ($this->rawComponents->has($componentTag)) {
+            if ($this->rawComponents->has($componentTag)) {
+                return $this->rawComponents[$componentTag]->closingCode . PHP_EOL
+                    . '<?php' . PHP_EOL
+                    . '$__rawComponentAttributes = $__previousRawComponentAttributes;' . PHP_EOL
+                    . '$__previousRawComponentAttributes = null;' . PHP_EOL
+                    . '?>' . PHP_EOL;
+            }
+        }
+
+        foreach ($this->rawComponentsStartingWith as $componentStartingWith => $rawComponent) {
+            if (\str_starts_with($componentTag, $componentStartingWith)) {
+                return $this->rawComponents[$componentTag]->closingCode . PHP_EOL
+                    . '<?php' . PHP_EOL
+                    . '$__rawComponentAttributes = $__previousRawComponentAttributes;' . PHP_EOL
+                    . '$__previousRawComponentAttributes = null;' . PHP_EOL
+                    . '?>' . PHP_EOL;
+            }
+        }
+
+        return $match[0];
+    }
+
+    protected function rawComponentSelfClosingTagCompiler(array $match): string
+    {
+        $componentTag = $match['componenttag'];
+
+        if ($this->rawComponents->has($componentTag)) {
+            if ($this->rawComponents->has($componentTag)) {
+                if (isset($this->rawComponents[$componentTag]->selfClosingCode)) {
+                    $attributes = $this->getAttributesFromAttributeString($match['attributes']);
+
+                    return '<?php' . PHP_EOL
+                        . '$__previousRawComponentAttributes = $__rawComponentAttributes ?? new \\Illuminate\\View\\ComponentAttributeBag([]);' . PHP_EOL
+                        . '$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([' . $this->componentAttributesToString($attributes) . ']);' . PHP_EOL
+                        . '$__rawComponentTag = \'' . $componentTag . '\';' . PHP_EOL
+                        . '?>' . PHP_EOL
+                        . $this->rawComponents[$componentTag]->selfClosingCode . PHP_EOL
+                        . '<?php' . PHP_EOL
+                        . '$__rawComponentAttributes = $__previousRawComponentAttributes;' . PHP_EOL
+                        . '$__previousRawComponentAttributes = null;' . PHP_EOL
+                        . '?>' . PHP_EOL;
+                }
+
+                return "<?php throw new \LogicException('The component [$componentTag] is not meant to be used with the self-closing tag syntax'); ?>";
+            }
+        }
+
+        foreach ($this->rawComponentsStartingWith as $componentStartingWith => $rawComponent) {
+            if (\str_starts_with($componentTag, $componentStartingWith)) {
+                if (isset($rawComponent->selfClosingCode)) {
+                    $attributes = $this->getAttributesFromAttributeString($match['attributes']);
+
+                    return '<?php' . PHP_EOL
+                        . '$__previousRawComponentAttributes = $__rawComponentAttributes ?? new \\Illuminate\\View\\ComponentAttributeBag([]);' . PHP_EOL
+                        . '$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([' . $this->componentAttributesToString($attributes) . ']);' . PHP_EOL
+                        . '$__rawComponentTag = \'' . $componentTag . '\';' . PHP_EOL
+                        . '?>' . PHP_EOL
+                        . $rawComponent->selfClosingCode . PHP_EOL
+                        . '<?php' . PHP_EOL
+                        . '$__rawComponentAttributes = $__previousRawComponentAttributes;' . PHP_EOL
+                        . '$__previousRawComponentAttributes = null;' . PHP_EOL
+                        . '?>' . PHP_EOL;
+                }
+
+                return "<?php throw new \LogicException('The component [$componentTag] is not meant to be used with the self-closing tag syntax'); ?>";
+            }
+        }
+
+        return $match[0];
+    }
 
     protected function rawComponentOpeningTagRegex(): string
     {
         return "/
             <
                 \s*
-                (?<component-tag>x[-\:]([\w\-\:\.]*))
+                (?<componenttag>x[-\:]([\w\-\:\.]*))
                 (?<attributes>
                     (?:
                         \s+
@@ -138,7 +231,7 @@ class RawComponentsManager extends ServiceProvider
 
     protected function rawComponentClosingTagRegex(): string
     {
-        return "/<\/\s*(?<component-tag>x[-\:][\w\-\:\.]*)\s*>/";
+        return "/<\/\s*(?<componenttag>x[-\:][\w\-\:\.]*)\s*>/";
     }
 
     protected function rawComponentSelfClosingTagRegex()
@@ -146,7 +239,7 @@ class RawComponentsManager extends ServiceProvider
         return "/
             <
                 \s*
-                (?<component-tag>x[-\:]([\w\-\:\.]*))
+                (?<componenttag>x[-\:]([\w\-\:\.]*))
                 \s*
                 (?<attributes>
                     (?:

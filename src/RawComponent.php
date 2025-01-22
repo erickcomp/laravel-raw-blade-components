@@ -7,10 +7,10 @@ use \Illuminate\Support\ServiceProvider;
 class RawComponent extends ServiceProvider
 {
     public function __construct(
-        protected string $tag,
-        protected string $openingCode,
-        protected string $closingCode,
-        protected ?string $selfClosingCode = null
+        public string $tag,
+        public string $openingCode,
+        public string $closingCode,
+        public ?string $selfClosingCode = null
     )
     {}
 }
