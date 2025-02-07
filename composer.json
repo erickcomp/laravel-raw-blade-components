@@ -16,7 +16,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "ErickComp\\RawBladeComponents\\Tests\\": "tests/"
         }
     },
     "minimum-stability": "dev",
@@ -28,6 +28,15 @@
             ],
             "dont-discover": [
             ]
+        }
+    },
+    "require-dev": {
+        "pestphp/pest": "^3.7",
+        "orchestra/testbench": "^9.9"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
         }
     }
 }

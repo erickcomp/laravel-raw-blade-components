@@ -16,11 +16,11 @@ class RawComponentsManager
         $this->rawComponentsStartingWith = new Collection();
     }
 
-    public function hasRegisteredRawComponents(): bool
-    {
-        return $this->rawComponents->isNotEmpty() ||
-            $this->rawComponentsStartingWith->isNotEmpty();
-    }
+    // public function hasRegisteredRawComponents(): bool
+    // {
+    //     return $this->rawComponents->isNotEmpty() ||
+    //         $this->rawComponentsStartingWith->isNotEmpty();
+    // }
 
     public function rawComponent(
         string $tag,
@@ -30,7 +30,7 @@ class RawComponentsManager
     ): static {
         $this->rawComponents->put(
             $tag,
-            new RawComponent(
+            new RawComponentCode(
                 $tag,
                 $openingCode,
                 $closingCode,
@@ -49,13 +49,24 @@ class RawComponentsManager
     ): static {
         $this->rawComponentsStartingWith->put(
             $tag,
-            new RawComponent(
+            new RawComponentCode(
                 $tag,
                 $openingCode,
                 $closingCode,
                 $selfClosingCode,
             ),
         );
+
+        $this->rawComponentsStartingWith = $this->rawComponentsStartingWith->sort(function (RawComponentCode $a, RawComponentCode $b) {
+            if (strpos($b->tag, $a->tag) === 0) {
+                return 1;  // $b is a longer version of $a, so $b should come first
+            }
+            if (strpos($a->tag, $b->tag) === 0) {
+                return -1; // $a is a longer version of $b, so $a should come first
+            }
+
+            return strcmp($a->tag, $b->tag);
+        });
 
         return $this;
     }
@@ -121,7 +132,7 @@ class RawComponentsManager
 
         foreach ($this->rawComponentsStartingWith as $componentStartingWith => $rawComponent) {
             if (\str_starts_with($componentTag, $componentStartingWith)) {
-                return $this->rawComponents[$componentTag]->closingCode . PHP_EOL
+                return $this->rawComponentsStartingWith[$componentTag]->closingCode . PHP_EOL
                     . '<?php' . PHP_EOL
                     . '$__rawComponentAttributes = $__previousRawComponentAttributes;' . PHP_EOL
                     . '$__previousRawComponentAttributes = null;' . PHP_EOL
