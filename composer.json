@@ -1,5 +1,4 @@
 {
-    "version": "dev-master",
     "name": "erickcomp/laravel-raw-blade-components",
     "type": "package",
     "description": "Provides the possibility to create and use blade components syntax with arbitrary code",
