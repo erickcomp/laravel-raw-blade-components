@@ -9,5 +9,6 @@ class RawComponentCode
         public string $openingCode,
         public string $closingCode,
         public ?string $selfClosingCode = null,
+        public array $defaultAttributes = [],
     ) {}
 }

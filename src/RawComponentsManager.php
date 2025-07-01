@@ -27,6 +27,7 @@ class RawComponentsManager
         string $openingCode,
         string $closingCode,
         ?string $selfClosingCode = null,
+        array $defaultAttributes = [],
     ): static {
         $this->rawComponents->put(
             $tag,
@@ -35,6 +36,7 @@ class RawComponentsManager
                 $openingCode,
                 $closingCode,
                 $selfClosingCode,
+                $defaultAttributes,
             ),
         );
 
@@ -46,6 +48,7 @@ class RawComponentsManager
         string $openingCode,
         string $closingCode,
         ?string $selfClosingCode = null,
+        array $defaultAttributes = [],
     ): static {
         $this->rawComponentsStartingWith->put(
             $tag,
@@ -54,6 +57,7 @@ class RawComponentsManager
                 $openingCode,
                 $closingCode,
                 $selfClosingCode,
+                $defaultAttributes,
             ),
         );
 
@@ -90,7 +94,10 @@ class RawComponentsManager
         $componentTag = $match['componenttag'];
 
         if ($this->rawComponents->has($componentTag)) {
-            $attributes = $this->getAttributesFromAttributeString($match['attributes']);
+            $attributes = \array_merge(
+                $this->rawComponents[$componentTag]->defaultAttributes,
+                $this->getAttributesFromAttributeString($match['attributes']),
+            );
 
             return '<?php ' . PHP_EOL
                 . '$__previousRawComponentAttributes = $__rawComponentAttributes ?? new \\Illuminate\\View\\ComponentAttributeBag([]);' . PHP_EOL
@@ -102,7 +109,11 @@ class RawComponentsManager
 
         foreach ($this->rawComponentsStartingWith as $componentStartingWith => $rawComponent) {
             if (\str_starts_with($componentTag, $componentStartingWith)) {
-                $attributes = $this->getAttributesFromAttributeString($match['attributes']);
+                //$attributes = $this->getAttributesFromAttributeString($match['attributes']);
+                $attributes = \array_merge(
+                    $rawComponent->defaultAttributes,
+                    $this->getAttributesFromAttributeString($match['attributes']),
+                );
 
                 return '<?php ' . PHP_EOL
                     . '$__previousRawComponentAttributes = $__rawComponentAttributes ?? new \\Illuminate\\View\\ComponentAttributeBag([]);' . PHP_EOL
@@ -150,7 +161,10 @@ class RawComponentsManager
         if ($this->rawComponents->has($componentTag)) {
             if ($this->rawComponents->has($componentTag)) {
                 if (isset($this->rawComponents[$componentTag]->selfClosingCode)) {
-                    $attributes = $this->getAttributesFromAttributeString($match['attributes']);
+                    $attributes = \array_merge(
+                        $this->rawComponents[$componentTag]->defaultAttributes,
+                        $this->getAttributesFromAttributeString($match['attributes']),
+                    );
 
                     return '<?php' . PHP_EOL
                         . '$__previousRawComponentAttributes = $__rawComponentAttributes ?? new \\Illuminate\\View\\ComponentAttributeBag([]);' . PHP_EOL
