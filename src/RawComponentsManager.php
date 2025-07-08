@@ -174,7 +174,7 @@ class RawComponentsManager
                 return <<<PHP_CODE
                         {$this->rawComponents[$componentTag]->closingCode}
                         <?php
-                        \\extract(\\array_pop(\$__rawComponentsStack), \EXTR_OVERWRITE);
+                        \\extract(\\array_pop(\$__rawComponentsStack) ?? [], \EXTR_OVERWRITE);
                         ?>;
                     PHP_CODE;
                 /*
@@ -192,7 +192,7 @@ class RawComponentsManager
                 return <<<PHP_CODE
                         {$this->rawComponentsStartingWith[$componentTag]->closingCode}
                         <?php
-                        \\extract(\\array_pop(\$__rawComponentsStack), \EXTR_OVERWRITE);
+                        \\extract(\\array_pop(\$__rawComponentsStack) ?? [], \EXTR_OVERWRITE);
                         ?>;
                     PHP_CODE;
 
@@ -234,7 +234,7 @@ class RawComponentsManager
                         \$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([{$this->componentAttributesToString($attributes)}]);
                         ?>
                         {$this->rawComponents[$componentTag]->selfClosingCode}
-                        <?php \\extract(\\array_pop(\$__rawComponentsStack), \EXTR_OVERWRITE); ?>
+                        <?php \\extract(\\array_pop(\$__rawComponentsStack) ?? [], \EXTR_OVERWRITE); ?>
                     PHP_CODE;
 
                 /*
@@ -272,7 +272,7 @@ class RawComponentsManager
                             \$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([{$this->componentAttributesToString($attributes)}]);
                             ?>
                             {$rawComponent->selfClosingCode}
-                            <?php \\extract(\\array_pop(\$__rawComponentsStack), \EXTR_OVERWRITE); ?>
+                            <?php \\extract(\\array_pop(\$__rawComponentsStack) ?? [], \EXTR_OVERWRITE); ?>
                         PHP_CODE;
                     /*
                     return '<?php' . PHP_EOL
