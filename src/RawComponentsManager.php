@@ -103,12 +103,16 @@ class RawComponentsManager
                         <?php
                         \$__rawComponentsStack ??= [];
                         \$__rawComponentsStack[] = [
+                            '__rawComponentTagPrefix'  => \$__rawComponentTagPrefix ?? null,
                             '__rawComponentTag'        => \$__rawComponentTag ?? null,
                             '__rawComponentAttributes' => \$__rawComponentAttributes ?? null,
                         ];
+                        
+                        \$__parentRawComponentTagPrefix = \$__rawComponentTagPrefix ?? null;
                         \$__parentRawComponentTag = \$__rawComponentTag ?? null;
                         \$__parentRawComponentAttributes = \$__rawComponentAttributes ?? null;
 
+                        \$__rawComponentTagPrefix = '';
                         \$__rawComponentTag = '$componentTag';
                         \$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([{$this->componentAttributesToString($attributes)}]);
                         ?>
@@ -138,12 +142,16 @@ class RawComponentsManager
                         <?php
                         \$__rawComponentsStack ??= [];
                         \$__rawComponentsStack[] = [
+                            '__rawComponentTagPrefix'  => \$__rawComponentTagPrefix ?? null,
                             '__rawComponentTag'        => \$__rawComponentTag ?? null,
                             '__rawComponentAttributes' => \$__rawComponentAttributes ?? null,
                         ];
+                        
+                        \$__parentRawComponentTagPrefix = \$__rawComponentTagPrefix ?? null;
                         \$__parentRawComponentTag = \$__rawComponentTag ?? null;
                         \$__parentRawComponentAttributes = \$__rawComponentAttributes ?? null;
 
+                        \$__rawComponentTagPrefix = '$componentStartingWith';
                         \$__rawComponentTag = '$componentTag';
                         \$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([{$this->componentAttributesToString($attributes)}]);
                         ?>
@@ -262,12 +270,16 @@ class RawComponentsManager
                             <?php
                             \$__rawComponentsStack ??= [];
                             \$__rawComponentsStack[] = [
+                                '__rawComponentTagPrefix'  => \$__rawComponentTagPrefix ?? null,
                                 '__rawComponentTag'        => \$__rawComponentTag ?? null,
                                 '__rawComponentAttributes' => \$__rawComponentAttributes ?? null,
                             ];
+                            
+                            \$__parentRawComponentTagPrefix = \$__rawComponentTagPrefix ?? null;
                             \$__parentRawComponentTag = \$__rawComponentTag ?? null;
                             \$__parentRawComponentAttributes = \$__rawComponentAttributes ?? null;
 
+                            \$__rawComponentTagPrefix = '$componentStartingWith';
                             \$__rawComponentTag = '$componentTag';
                             \$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([{$this->componentAttributesToString($attributes)}]);
                             ?>
