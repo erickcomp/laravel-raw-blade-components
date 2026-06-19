@@ -2,11 +2,16 @@
     "name": "erickcomp/laravel-raw-blade-components",
     "type": "package",
     "description": "Provides the possibility to create and use blade components syntax with arbitrary code",
-    "keywords": ["laravel", "framework", "blade", "component"],
+    "keywords": [
+        "laravel",
+        "framework",
+        "blade",
+        "component"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "laravel/framework": "^11.0|^12.0"
+        "laravel/framework": "^12.60|^13.10"
     },
     "autoload": {
         "psr-4": {
@@ -18,15 +23,14 @@
             "ErickComp\\RawBladeComponents\\Tests\\": "tests/"
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true,
     "extra": {
         "laravel": {
             "providers": [
                 "ErickComp\\RawBladeComponents\\RawBladeComponentsServiceProvider"
             ],
-            "dont-discover": [
-            ]
+            "dont-discover": []
         }
     },
     "require-dev": {
