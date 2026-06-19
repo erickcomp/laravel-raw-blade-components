@@ -30,7 +30,6 @@ it('can compile self-closing tags starting with', function () {
     expect($rendered)->toBe(
         ''
         . TestCompilesTagsServiceProvider::selfClosingCode() . ":starting-with-SELF-CLOSE"
-        . PHP_EOL
     );
 });
 

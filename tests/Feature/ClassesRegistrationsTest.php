@@ -5,7 +5,6 @@ use ErickComp\RawBladeComponents\RawComponentsManager;
 use Illuminate\Support\Facades\Facade;
 
 it('registered RawComponentsManager class', function () {
-
     expect(app()->bound(RawComponentsManager::class))->toBe(true);
 });
 
