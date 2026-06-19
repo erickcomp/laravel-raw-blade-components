@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * ################ DO NOT TOUCH THIS FILE'S FORMATTING. ################
+ * 
+ * IF THE HEREDOCS GET OUT OF FORMATTING, THE TESTS WILL BREAK.
+ */
+
+
 namespace ErickComp\RawBladeComponents;
 
 use Illuminate\Support\Collection;
@@ -100,25 +107,23 @@ class RawComponentsManager
             );
 
             return <<<PHP_CODE
-                        <?php
-                        \$__rawComponentsStack ??= [];
-                        \$__rawComponentsStack[] = [
-                            '__rawComponentTagPrefix'  => \$__rawComponentTagPrefix ?? null,
-                            '__rawComponentTag'        => \$__rawComponentTag ?? null,
-                            '__rawComponentAttributes' => \$__rawComponentAttributes ?? null,
-                        ];
-                        
-                        \$__parentRawComponentTagPrefix = \$__rawComponentTagPrefix ?? null;
-                        \$__parentRawComponentTag = \$__rawComponentTag ?? null;
-                        \$__parentRawComponentAttributes = \$__rawComponentAttributes ?? null;
+                    <?php
+                    \$__rawComponentsStack ??= [];
+                    \$__rawComponentsStack[] = [
+                        '__rawComponentTagPrefix'  => \$__rawComponentTagPrefix ?? null,
+                        '__rawComponentTag'        => \$__rawComponentTag ?? null,
+                        '__rawComponentAttributes' => \$__rawComponentAttributes ?? null,
+                    ];
 
-                        \$__rawComponentTagPrefix = '';
-                        \$__rawComponentTag = '$componentTag';
-                        \$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([{$this->componentAttributesToString($attributes)}]);
-                        ?>
+                    \$__parentRawComponentTagPrefix = \$__rawComponentTagPrefix ?? null;
+                    \$__parentRawComponentTag = \$__rawComponentTag ?? null;
+                    \$__parentRawComponentAttributes = \$__rawComponentAttributes ?? null;
 
-                        {$this->rawComponents[$componentTag]->openingCode}
-                    PHP_CODE;
+                    \$__rawComponentTagPrefix = '';
+                    \$__rawComponentTag = '$componentTag';
+                    \$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([{$this->componentAttributesToString($attributes)}]);
+                    ?>{$this->rawComponents[$componentTag]->openingCode}
+                PHP_CODE;
 
             /*
             return '<?php ' . PHP_EOL
@@ -146,7 +151,7 @@ class RawComponentsManager
                             '__rawComponentTag'        => \$__rawComponentTag ?? null,
                             '__rawComponentAttributes' => \$__rawComponentAttributes ?? null,
                         ];
-                        
+
                         \$__parentRawComponentTagPrefix = \$__rawComponentTagPrefix ?? null;
                         \$__parentRawComponentTag = \$__rawComponentTag ?? null;
                         \$__parentRawComponentAttributes = \$__rawComponentAttributes ?? null;
@@ -155,7 +160,6 @@ class RawComponentsManager
                         \$__rawComponentTag = '$componentTag';
                         \$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([{$this->componentAttributesToString($attributes)}]);
                         ?>
-
                         {$rawComponent->openingCode}
                     PHP_CODE;
 
@@ -180,10 +184,10 @@ class RawComponentsManager
         if ($this->rawComponents->has($componentTag)) {
             if ($this->rawComponents->has($componentTag)) {
                 return <<<PHP_CODE
-                        {$this->rawComponents[$componentTag]->closingCode}
-                        <?php
-                        \\extract(\\array_pop(\$__rawComponentsStack) ?? [], \EXTR_OVERWRITE);
-                        ?>;
+                    {$this->rawComponents[$componentTag]->closingCode}
+                    <?php
+                    \\extract(\\array_pop(\$__rawComponentsStack) ?? [], \EXTR_OVERWRITE);
+                    ?>
                     PHP_CODE;
                 /*
                 return $this->rawComponents[$componentTag]->closingCode . PHP_EOL
@@ -198,10 +202,8 @@ class RawComponentsManager
         foreach ($this->rawComponentsStartingWith as $componentStartingWith => $rawComponent) {
             if (\str_starts_with($componentTag, $componentStartingWith)) {
                 return <<<PHP_CODE
-                        {$this->rawComponentsStartingWith[$componentTag]->closingCode}
-                        <?php
-                        \\extract(\\array_pop(\$__rawComponentsStack) ?? [], \EXTR_OVERWRITE);
-                        ?>;
+                    {$this->rawComponentsStartingWith[$componentTag]->closingCode}
+                    <?php \\extract(\\array_pop(\$__rawComponentsStack) ?? [], \EXTR_OVERWRITE); ?>
                     PHP_CODE;
 
                 /*
@@ -229,20 +231,20 @@ class RawComponentsManager
                 );
 
                 return <<<PHP_CODE
-                        <?php
-                        \$__rawComponentsStack ??= [];
-                        \$__rawComponentsStack[] = [
-                            '__rawComponentTag'        => \$__rawComponentTag ?? null,
-                            '__rawComponentAttributes' => \$__rawComponentAttributes ?? null,
-                        ];
-                        \$__parentRawComponentTag = \$__rawComponentTag ?? null;
-                        \$__parentRawComponentAttributes = \$__rawComponentAttributes ?? null;
+                    <?php
+                    \$__rawComponentsStack ??= [];
+                    \$__rawComponentsStack[] = [
+                        '__rawComponentTag'        => \$__rawComponentTag ?? null,
+                        '__rawComponentAttributes' => \$__rawComponentAttributes ?? null,
+                    ];
+                    \$__parentRawComponentTag = \$__rawComponentTag ?? null;
+                    \$__parentRawComponentAttributes = \$__rawComponentAttributes ?? null;
 
-                        \$__rawComponentTag = '$componentTag';
-                        \$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([{$this->componentAttributesToString($attributes)}]);
-                        ?>
-                        {$this->rawComponents[$componentTag]->selfClosingCode}
-                        <?php \\extract(\\array_pop(\$__rawComponentsStack) ?? [], \EXTR_OVERWRITE); ?>
+                    \$__rawComponentTag = '$componentTag';
+                    \$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([{$this->componentAttributesToString($attributes)}]);
+                    ?>
+                    {$this->rawComponents[$componentTag]->selfClosingCode}
+                    <?php \\extract(\\array_pop(\$__rawComponentsStack) ?? [], \EXTR_OVERWRITE); ?>
                     PHP_CODE;
 
                 /*
@@ -274,7 +276,7 @@ class RawComponentsManager
                                 '__rawComponentTag'        => \$__rawComponentTag ?? null,
                                 '__rawComponentAttributes' => \$__rawComponentAttributes ?? null,
                             ];
-                            
+
                             \$__parentRawComponentTagPrefix = \$__rawComponentTagPrefix ?? null;
                             \$__parentRawComponentTag = \$__rawComponentTag ?? null;
                             \$__parentRawComponentAttributes = \$__rawComponentAttributes ?? null;
@@ -282,9 +284,7 @@ class RawComponentsManager
                             \$__rawComponentTagPrefix = '$componentStartingWith';
                             \$__rawComponentTag = '$componentTag';
                             \$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([{$this->componentAttributesToString($attributes)}]);
-                            ?>
-                            {$rawComponent->selfClosingCode}
-                            <?php \\extract(\\array_pop(\$__rawComponentsStack) ?? [], \EXTR_OVERWRITE); ?>
+                            ?>{$rawComponent->selfClosingCode}<?php \\extract(\\array_pop(\$__rawComponentsStack) ?? [], \EXTR_OVERWRITE); ?>
                         PHP_CODE;
                     /*
                     return '<?php' . PHP_EOL
