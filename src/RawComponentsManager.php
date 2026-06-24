@@ -183,7 +183,6 @@ class RawComponentsManager
         $componentTag = $match['componenttag'];
 
         if ($this->rawComponents->has($componentTag)) {
-            if ($this->rawComponents->has($componentTag)) {
                 return <<<PHP_CODE
                     {$this->rawComponents[$componentTag]->closingCode}
                     <?php
@@ -197,7 +196,6 @@ class RawComponentsManager
                     . '$__previousRawComponentAttributes = null;' . PHP_EOL
                     . '?>' . PHP_EOL;
                 */
-            }
         }
 
         foreach ($this->rawComponentsStartingWith as $componentStartingWith => $rawComponent) {
