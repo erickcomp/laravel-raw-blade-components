@@ -44,6 +44,14 @@ it('can compile self-closing tags starting with', function () {
     );
 });
 
+it('preserves __rawComponentTagPrefix in stack for exact self-closing tags', function () {
+    /** @var \ErickComp\RawBladeComponents\RawComponentsManager */
+    $manager = \ErickComp\RawBladeComponents\RawComponent::getFacadeRoot();
+
+    $compiled = $manager->compileRawBladeComponents('<x-test-full />');
+    expect($compiled)->toContain("'__rawComponentTagPrefix'");
+});
+
 it('merges default attributes on self-closing prefix-components', function () {
     /** @var \ErickComp\RawBladeComponents\RawComponentsManager */
     $manager = \ErickComp\RawBladeComponents\RawComponent::getFacadeRoot();
