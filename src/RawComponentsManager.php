@@ -16,6 +16,7 @@ class RawComponentsManager
 {
     protected Collection $rawComponents;
     protected Collection $rawComponentsStartingWith;
+    protected ?ComponentTagCompiler $laravelComponentTagCompiler = null;
 
     public function __construct()
     {
@@ -421,10 +422,8 @@ class RawComponentsManager
 
     protected function getLaravelComponentTagCompiler()
     {
-        static $compiler = null;
-
-        if ($compiler === null) {
-            $compiler = new class (app()->make(ComponentTagCompiler::class)) extends ComponentTagCompiler {
+        if ($this->laravelComponentTagCompiler === null) {
+            $this->laravelComponentTagCompiler = new class (app()->make(ComponentTagCompiler::class)) extends ComponentTagCompiler {
 
                 public function __construct(ComponentTagCompiler $componentTagCompiler)
                 {
@@ -448,6 +447,6 @@ class RawComponentsManager
             };
         }
 
-        return $compiler;
+        return $this->laravelComponentTagCompiler;
     }
 }
