@@ -100,6 +100,7 @@ class RawComponentsManager
     protected function rawComponentOpeningTagCompiler(array $match): string
     {
         $componentTag = $match['componenttag'];
+        $safeComponentTag = \addslashes($componentTag);
 
         if ($this->rawComponents->has($componentTag)) {
             $attributes = \array_merge(
@@ -121,7 +122,7 @@ class RawComponentsManager
                     \$__parentRawComponentAttributes = \$__rawComponentAttributes ?? null;
 
                     \$__rawComponentTagPrefix = '';
-                    \$__rawComponentTag = '$componentTag';
+                    \$__rawComponentTag = '$safeComponentTag';
                     \$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([{$this->componentAttributesToString($attributes)}]);
                     ?>{$this->rawComponents[$componentTag]->openingCode}
                 PHP_CODE;
@@ -143,6 +144,7 @@ class RawComponentsManager
                     $rawComponent->defaultAttributes,
                     $this->getAttributesFromAttributeString($match['attributes']),
                 );
+                $safePrefix = \addslashes($componentStartingWith);
 
                 return <<<PHP_CODE
                         <?php
@@ -157,8 +159,8 @@ class RawComponentsManager
                         \$__parentRawComponentTag = \$__rawComponentTag ?? null;
                         \$__parentRawComponentAttributes = \$__rawComponentAttributes ?? null;
 
-                        \$__rawComponentTagPrefix = '$componentStartingWith';
-                        \$__rawComponentTag = '$componentTag';
+                        \$__rawComponentTagPrefix = '$safePrefix';
+                        \$__rawComponentTag = '$safeComponentTag';
                         \$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([{$this->componentAttributesToString($attributes)}]);
                         ?>
                         {$rawComponent->openingCode}
@@ -221,6 +223,7 @@ class RawComponentsManager
     protected function rawComponentSelfClosingTagCompiler(array $match): string
     {
         $componentTag = $match['componenttag'];
+        $safeComponentTag = \addslashes($componentTag);
 
         if ($this->rawComponents->has($componentTag)) {
             if (isset($this->rawComponents[$componentTag]->selfClosingCode)) {
@@ -242,7 +245,7 @@ class RawComponentsManager
                     \$__parentRawComponentAttributes = \$__rawComponentAttributes ?? null;
 
                     \$__rawComponentTagPrefix = '';
-                    \$__rawComponentTag = '$componentTag';
+                    \$__rawComponentTag = '$safeComponentTag';
                     \$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([{$this->componentAttributesToString($attributes)}]);
                     ?>
                     {$this->rawComponents[$componentTag]->selfClosingCode}
@@ -273,6 +276,8 @@ class RawComponentsManager
                         $rawComponent->defaultAttributes,
                         $this->getAttributesFromAttributeString($match['attributes']),
                     );
+                    $safePrefix = \addslashes($componentStartingWith);
+
                     return <<<PHP_CODE
                             <?php
                             \$__rawComponentsStack ??= [];
@@ -286,8 +291,8 @@ class RawComponentsManager
                             \$__parentRawComponentTag = \$__rawComponentTag ?? null;
                             \$__parentRawComponentAttributes = \$__rawComponentAttributes ?? null;
 
-                            \$__rawComponentTagPrefix = '$componentStartingWith';
-                            \$__rawComponentTag = '$componentTag';
+                            \$__rawComponentTagPrefix = '$safePrefix';
+                            \$__rawComponentTag = '$safeComponentTag';
                             \$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([{$this->componentAttributesToString($attributes)}]);
                             ?>{$rawComponent->selfClosingCode}<?php \\extract(\\array_pop(\$__rawComponentsStack) ?? [], \EXTR_OVERWRITE); ?>
                         PHP_CODE;
