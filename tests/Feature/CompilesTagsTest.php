@@ -151,6 +151,21 @@ it('can compile exact component nested inside prefix-component', function () {
     expect($rendered)->toContain('[PFX-CLOSE]');
 });
 
+it('matches longer prefix before shorter when prefixes overlap', function () {
+    \ErickComp\RawBladeComponents\RawComponent::rawComponentStartingWith('x-overlap', '[SHORT-OPEN]', '[SHORT-CLOSE]');
+    \ErickComp\RawBladeComponents\RawComponent::rawComponentStartingWith('x-overlap-specific', '[LONG-OPEN]', '[LONG-CLOSE]');
+
+    $rendered = Blade::render(
+        '<x-overlap-specific:foo>content</x-overlap-specific:foo>',
+        deleteCachedView: true,
+    );
+
+    expect($rendered)->toContain('[LONG-OPEN]');
+    expect($rendered)->toContain('[LONG-CLOSE]');
+    expect($rendered)->not->toContain('[SHORT-OPEN]');
+    expect($rendered)->not->toContain('[SHORT-CLOSE]');
+});
+
 it('overwrites registration when same tag is registered twice', function () {
     \ErickComp\RawBladeComponents\RawComponent::rawComponent('x-test-overwrite', '[FIRST-OPEN]', '[FIRST-CLOSE]');
     \ErickComp\RawBladeComponents\RawComponent::rawComponent('x-test-overwrite', '[SECOND-OPEN]', '[SECOND-CLOSE]');
