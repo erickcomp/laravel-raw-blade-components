@@ -85,6 +85,32 @@ RawComponent::rawComponentStartingWith(
 
 Prefix registrations are sorted so longer/more-specific prefixes match first.
 
+## Default attributes
+
+You can provide default attributes when registering a component. These defaults are merged with attributes found in the tag at compile time (tag attributes take precedence over defaults):
+
+```php
+RawComponent::rawComponent(
+    'x-badge',
+    '<?php echo $__rawComponentAttributes; ?>',
+    '</span>',
+    null,
+    ['class' => 'badge', 'data-role' => 'label'],
+);
+```
+
+```blade
+{{-- Without tag attributes: defaults are used --}}
+<x-badge>New</x-badge>
+{{-- renders: class="badge" data-role="label" New </span> --}}
+
+{{-- With tag attributes: tag values override defaults --}}
+<x-badge class="badge-primary">New</x-badge>
+{{-- renders: class="badge-primary" data-role="label" New </span> --}}
+```
+
+Default attributes accept plain string values (`'badge'`), numeric values, and boolean `true`. The package normalizes them automatically for the Blade compiler.
+
 ## Error cases
 
 - Using a self-closing tag when no self-closing snippet was registered for that component will throw a `LogicException`, which is surfaced as an `Illuminate\View\ViewException` when rendering (see tests).
