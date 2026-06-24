@@ -42,5 +42,23 @@ test('it can register a raw component', function () {
     expect($components->has($componentTag))->toBe(true);
 });
 
-test('TODO: it can register an attributeless raw component', function () { })->todo();
+test('it can register a raw component without default attributes', function () {
+    $componentTag = 'x-test-no-attrs';
+    /** @var RawComponentsManager */
+    $manager = RawComponent::getFacadeRoot();
+
+    $manager->rawComponent(
+        $componentTag,
+        'opening',
+        'closing',
+    );
+
+    $refObject = new \ReflectionObject($manager);
+
+    /** @var \Illuminate\Support\Collection */
+    $components = $refObject->getProperty('rawComponents')->getValue($manager);
+
+    expect($components->has($componentTag))->toBe(true);
+    expect($components[$componentTag]->defaultAttributes)->toBe([]);
+});
 

@@ -160,5 +160,29 @@ it('does not compile non-registered tags', function () {
 });
 
 
-test('TODO: if the raw component can use attributes', function () {
-})->todo();
+it('renders attributes on non-self-closing tags', function () {
+    \ErickComp\RawBladeComponents\RawComponent::rawComponent(
+        'x-test-attrs',
+        '<?php echo $__rawComponentAttributes; ?>',
+        '</div>',
+    );
+
+    $rendered = Blade::render('<x-test-attrs class="foo" id="bar">content</x-test-attrs>', deleteCachedView: true);
+
+    expect($rendered)->toContain('class="foo"');
+    expect($rendered)->toContain('id="bar"');
+    expect($rendered)->toContain('content');
+});
+
+it('renders attributes on self-closing tags', function () {
+    \ErickComp\RawBladeComponents\RawComponent::rawComponent(
+        'x-test-attrs-sc',
+        '<div>',
+        '</div>',
+        '<?php echo $__rawComponentAttributes; ?>',
+    );
+
+    $rendered = Blade::render('<x-test-attrs-sc class="baz" />', deleteCachedView: true);
+
+    expect($rendered)->toContain('class="baz"');
+});
