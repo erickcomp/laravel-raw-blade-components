@@ -202,7 +202,7 @@ class RawComponentsManager
         foreach ($this->rawComponentsStartingWith as $componentStartingWith => $rawComponent) {
             if (\str_starts_with($componentTag, $componentStartingWith)) {
                 return <<<PHP_CODE
-                    {$this->rawComponentsStartingWith[$componentTag]->closingCode}
+                    {$rawComponent->closingCode}
                     <?php \\extract(\\array_pop(\$__rawComponentsStack) ?? [], \EXTR_OVERWRITE); ?>
                     PHP_CODE;
 

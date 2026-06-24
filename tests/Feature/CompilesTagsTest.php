@@ -25,6 +25,17 @@ it('can compile non-self-closing tags starting with', function () {
     );
 });
 
+it('can compile non-self-closing tags starting with using suffixed closing tag', function () {
+    $rendered = Blade::render('<x-test-starting-with:0101>|</x-test-starting-with:0101>', deleteCachedView: true);
+    expect($rendered)->toBe(
+        ''
+        . TestCompilesTagsServiceProvider::openingCode() . ':starting-with-START'
+        . '|'
+        . TestCompilesTagsServiceProvider::closingCode() . ':starting-with-END'
+        . PHP_EOL
+    );
+});
+
 it('can compile self-closing tags starting with', function () {
     $rendered = Blade::render('<x-test-starting-with:0101 />', deleteCachedView: true);
     expect($rendered)->toBe(
