@@ -98,13 +98,25 @@ Prefix registrations are sorted so longer/more-specific prefixes match first.
 
 - Manager: `ErickComp\RawBladeComponents\RawComponentsManager` (registered as a singleton)
 
+## Template variables available in snippets
+
+When a raw component is rendered, the following PHP variables are available inside your opening, closing and self-closing code snippets:
+
+| Variable | Description |
+|---|---|
+| `$__rawComponentTagPrefix` | The registered prefix for prefix-matched components (empty string for exact matches). |
+| `$__rawComponentTag` | The actual component tag matched (e.g. `x-alert:success`). |
+| `$__rawComponentAttributes` | An `Illuminate\View\ComponentAttributeBag` instance with merged default and parsed attributes. |
+| `$__parentRawComponentTagPrefix` | The `$__rawComponentTagPrefix` of the parent raw component (or `null` if not nested). |
+| `$__parentRawComponentTag` | The `$__rawComponentTag` of the parent raw component (or `null` if not nested). |
+| `$__parentRawComponentAttributes` | The `$__rawComponentAttributes` of the parent raw component (or `null` if not nested). |
+
+The `$__parent*` variables allow your snippets to access the enclosing raw component's context when nesting.
+
 ## Internals & notes
 
 - The package registers its compiler via `Blade::prepareStringsForCompilationUsing(...)` in the service provider so it runs during Blade's compile process.
-- Internally, the generated template code maintains a small stack using the following internal variables:
-  - `$__rawComponentsStack`, `$__rawComponentTagPrefix`, `$__rawComponentTag`, `$__rawComponentAttributes`.
-
-These variables are implementation details and should be considered private.
+- Internally, the generated template code maintains a stack (`$__rawComponentsStack`) to preserve context when nesting raw components. This variable is an implementation detail and should be considered private.
 
 ## Limitations
 

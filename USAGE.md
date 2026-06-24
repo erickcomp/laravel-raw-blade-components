@@ -32,16 +32,50 @@ public function boot()
 - The package uses Laravel's `ComponentTagCompiler` internals to parse attributes. This means attribute binding semantics, `:attribute` bound values and Blade's `@class` / `@style` directives behave consistently with Laravel components insofar as `ComponentTagCompiler` supports them.
 - When registering a component you can provide `$defaultAttributes` which will be merged with attributes found in the tag at compile time. Registered defaults are arrays of key => value pairs and will be converted to an attribute bag in the generated template.
 
-## Generated template variables (internal)
+## Template variables available in snippets
 
-When a registered raw component is compiled, the manager injects PHP template code that manages a small context stack. The variables created are internal and subject to change; they are:
+When a raw component is compiled, the following PHP variables are available inside your opening, closing and self-closing code snippets:
 
-- `$__rawComponentsStack` — an array stack used to preserve parent contexts when nesting raw components.
-- `$__rawComponentTagPrefix` — the registered prefix for prefix-matched components (or empty string for exact matches).
+### Current component context
+
+- `$__rawComponentTagPrefix` — the registered prefix for prefix-matched components (empty string for exact matches).
 - `$__rawComponentTag` — the actual component tag matched (for example `x-test-starting-with:0101`).
 - `$__rawComponentAttributes` — an instance of `Illuminate\View\ComponentAttributeBag` created from merged defaults and parsed attributes.
 
-These are implementation details. Avoid depending on them from user templates.
+### Parent component context (nesting)
+
+When raw components are nested, these variables give you access to the enclosing component's context:
+
+- `$__parentRawComponentTagPrefix` — the `$__rawComponentTagPrefix` of the parent raw component (`null` if not nested).
+- `$__parentRawComponentTag` — the `$__rawComponentTag` of the parent raw component (`null` if not nested).
+- `$__parentRawComponentAttributes` — the `$__rawComponentAttributes` of the parent raw component (`null` if not nested).
+
+Example — conditionally adding a class based on the parent component:
+
+```php
+RawComponent::rawComponent(
+    'x-card',
+    '<div class="card">',
+    '</div>',
+);
+
+RawComponent::rawComponent(
+    'x-card-title',
+    '<?php $class = $__parentRawComponentTag === "x-card" ? "card-title" : "title"; ?><h2 class="<?php echo $class; ?>">',
+    '</h2>',
+);
+```
+
+```blade
+<x-card>
+    <x-card-title>Hello</x-card-title>  {{-- renders with class="card-title" --}}
+</x-card>
+<x-card-title>World</x-card-title>      {{-- renders with class="title" --}}
+```
+
+### Internal variables
+
+- `$__rawComponentsStack` — an array stack used internally to preserve and restore context when nesting. This is an implementation detail — do not depend on it.
 
 ## Self-closing vs non-self-closing
 
