@@ -160,12 +160,12 @@ class RawComponentsManager
         $componentTag = $match['componenttag'];
 
         if ($this->rawComponents->has($componentTag)) {
-                return <<<PHP_CODE
-                    {$this->rawComponents[$componentTag]->closingCode}
-                    <?php
-                    \\extract(\\array_pop(\$__rawComponentsStack) ?? [], \EXTR_OVERWRITE);
-                    ?>
-                    PHP_CODE;
+            return <<<PHP_CODE
+                {$this->rawComponents[$componentTag]->closingCode}
+                <?php
+                \\extract(\\array_pop(\$__rawComponentsStack) ?? [], \EXTR_OVERWRITE);
+                ?>
+                PHP_CODE;
         }
 
         foreach ($this->rawComponentsStartingWith as $componentStartingWith => $rawComponent) {
