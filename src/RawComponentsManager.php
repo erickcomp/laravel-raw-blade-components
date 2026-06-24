@@ -306,7 +306,7 @@ class RawComponentsManager
         return "/<\/\s*(?<componenttag>x[-\:][\w\-\:\.]*)\s*>/";
     }
 
-    protected function rawComponentSelfClosingTagRegex()
+    protected function rawComponentSelfClosingTagRegex(): string
     {
         return "/
             <
