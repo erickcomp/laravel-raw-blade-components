@@ -53,21 +53,16 @@ it('preserves __rawComponentTagPrefix in stack for exact self-closing tags', fun
 });
 
 it('merges default attributes on self-closing prefix-components', function () {
-    /** @var \ErickComp\RawBladeComponents\RawComponentsManager */
-    $manager = \ErickComp\RawBladeComponents\RawComponent::getFacadeRoot();
-
-    $manager->rawComponentStartingWith(
+    \ErickComp\RawBladeComponents\RawComponent::rawComponentStartingWith(
         'x-test-sc-defaults',
         '<open>',
         '</close>',
-        'SELF-CLOSE-OUTPUT',
-        ['data-default' => "'yes'"],
+        '<?php echo $__rawComponentAttributes; ?>',
+        ['data-default' => 'yes'],
     );
 
-    $compiled = $manager->compileRawBladeComponents('<x-test-sc-defaults:foo />');
-    expect($compiled)->toContain("'data-default'");
-    expect($compiled)->toContain("'yes'");
-    expect($compiled)->toContain('SELF-CLOSE-OUTPUT');
+    $rendered = Blade::render('<x-test-sc-defaults:foo />', deleteCachedView: true);
+    expect($rendered)->toContain('data-default="yes"');
 });
 
 test('it fails to compile self-closing tags when no self-tag code was registered', function () {
@@ -186,6 +181,36 @@ it('does not compile non-registered tags', function () {
     expect($rendered)->toBe(NonRegisteredRawComponent::CONTENT . ' ' . NonRegisteredRawComponent::CONTENT);
 });
 
+
+it('renders default attributes on non-self-closing tags', function () {
+    \ErickComp\RawBladeComponents\RawComponent::rawComponent(
+        'x-test-def-attrs',
+        '<?php echo $__rawComponentAttributes; ?>',
+        '</div>',
+        null,
+        ['class' => 'default-class', 'data-role' => 'widget'],
+    );
+
+    $rendered = Blade::render('<x-test-def-attrs>content</x-test-def-attrs>', deleteCachedView: true);
+
+    expect($rendered)->toContain('class="default-class"');
+    expect($rendered)->toContain('data-role="widget"');
+});
+
+it('tag attributes override default attributes', function () {
+    \ErickComp\RawBladeComponents\RawComponent::rawComponent(
+        'x-test-override-attrs',
+        '<?php echo $__rawComponentAttributes; ?>',
+        '</div>',
+        null,
+        ['class' => 'default'],
+    );
+
+    $rendered = Blade::render('<x-test-override-attrs class="custom">content</x-test-override-attrs>', deleteCachedView: true);
+
+    expect($rendered)->toContain('class="custom"');
+    expect($rendered)->not->toContain('class="default"');
+});
 
 it('renders attributes on non-self-closing tags', function () {
     \ErickComp\RawBladeComponents\RawComponent::rawComponent(
