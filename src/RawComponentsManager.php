@@ -24,12 +24,6 @@ class RawComponentsManager
         $this->rawComponentsStartingWith = new Collection();
     }
 
-    // public function hasRegisteredRawComponents(): bool
-    // {
-    //     return $this->rawComponents->isNotEmpty() ||
-    //         $this->rawComponentsStartingWith->isNotEmpty();
-    // }
-
     public function rawComponent(
         string $tag,
         string $openingCode,
@@ -126,20 +120,10 @@ class RawComponentsManager
                     \$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([{$this->componentAttributesToString($attributes)}]);
                     ?>{$this->rawComponents[$componentTag]->openingCode}
                 PHP_CODE;
-
-            /*
-            return '<?php ' . PHP_EOL
-                . '$__previousRawComponentAttributes = $__rawComponentAttributes ?? new \\Illuminate\\View\\ComponentAttributeBag([]);' . PHP_EOL
-                . '$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([' . $this->componentAttributesToString($attributes) . ']);' . PHP_EOL
-                . '$__rawComponentTag = \'' . $componentTag . '\';' . PHP_EOL
-                . '?>' . PHP_EOL
-                . $this->rawComponents[$componentTag]->openingCode;
-            */
         }
 
         foreach ($this->rawComponentsStartingWith as $componentStartingWith => $rawComponent) {
             if (\str_starts_with($componentTag, $componentStartingWith)) {
-                //$attributes = $this->getAttributesFromAttributeString($match['attributes']);
                 $attributes = \array_merge(
                     $rawComponent->defaultAttributes,
                     $this->getAttributesFromAttributeString($match['attributes']),
@@ -165,15 +149,6 @@ class RawComponentsManager
                         ?>
                         {$rawComponent->openingCode}
                     PHP_CODE;
-
-                /*
-                return '<?php ' . PHP_EOL
-                    . '$__previousRawComponentAttributes = $__rawComponentAttributes ?? new \\Illuminate\\View\\ComponentAttributeBag([]);' . PHP_EOL
-                    . '$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([' . $this->componentAttributesToString($attributes) . ']);' . PHP_EOL
-                    . '$__rawComponentTag = \'' . $componentTag . '\';' . PHP_EOL
-                    . '?>' . PHP_EOL
-                    . $rawComponent->openingCode;
-                */
             }
         }
 
@@ -191,13 +166,6 @@ class RawComponentsManager
                     \\extract(\\array_pop(\$__rawComponentsStack) ?? [], \EXTR_OVERWRITE);
                     ?>
                     PHP_CODE;
-                /*
-                return $this->rawComponents[$componentTag]->closingCode . PHP_EOL
-                    . '<?php' . PHP_EOL
-                    . '$__rawComponentAttributes = $__previousRawComponentAttributes;' . PHP_EOL
-                    . '$__previousRawComponentAttributes = null;' . PHP_EOL
-                    . '?>' . PHP_EOL;
-                */
         }
 
         foreach ($this->rawComponentsStartingWith as $componentStartingWith => $rawComponent) {
@@ -206,14 +174,6 @@ class RawComponentsManager
                     {$rawComponent->closingCode}
                     <?php \\extract(\\array_pop(\$__rawComponentsStack) ?? [], \EXTR_OVERWRITE); ?>
                     PHP_CODE;
-
-                /*
-                return $this->rawComponentsStartingWith[$componentTag]->closingCode . PHP_EOL
-                    . '<?php' . PHP_EOL
-                    . '$__rawComponentAttributes = $__previousRawComponentAttributes;' . PHP_EOL
-                    . '$__previousRawComponentAttributes = null;' . PHP_EOL
-                    . '?>' . PHP_EOL;
-                */
             }
         }
 
@@ -251,18 +211,6 @@ class RawComponentsManager
                     {$this->rawComponents[$componentTag]->selfClosingCode}
                     <?php \\extract(\\array_pop(\$__rawComponentsStack) ?? [], \EXTR_OVERWRITE); ?>
                     PHP_CODE;
-
-                /*
-                return '<?php' . PHP_EOL
-                    . '$__previousRawComponentAttributes = $__rawComponentAttributes ?? new \\Illuminate\\View\\ComponentAttributeBag([]);' . PHP_EOL
-                    . '$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([' . $this->componentAttributesToString($attributes) . ']);' . PHP_EOL
-                    . '?>' . PHP_EOL
-                    . $this->rawComponents[$componentTag]->selfClosingCode . PHP_EOL
-                    . '<?php' . PHP_EOL
-                    . '$__rawComponentAttributes = $__previousRawComponentAttributes;' . PHP_EOL
-                    . '$__previousRawComponentAttributes = null;' . PHP_EOL
-                    . '?>' . PHP_EOL;
-                */
             }
 
             return "<?php throw new \LogicException('The component [$componentTag] is not meant to be used with the self-closing tag syntax'); ?>";
@@ -296,18 +244,6 @@ class RawComponentsManager
                             \$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([{$this->componentAttributesToString($attributes)}]);
                             ?>{$rawComponent->selfClosingCode}<?php \\extract(\\array_pop(\$__rawComponentsStack) ?? [], \EXTR_OVERWRITE); ?>
                         PHP_CODE;
-                    /*
-                    return '<?php' . PHP_EOL
-                        . '$__previousRawComponentAttributes = $__rawComponentAttributes ?? new \\Illuminate\\View\\ComponentAttributeBag([]);' . PHP_EOL
-                        . '$__rawComponentAttributes = new \\Illuminate\\View\\ComponentAttributeBag([' . $this->componentAttributesToString($attributes) . ']);' . PHP_EOL
-                        . '$__rawComponentTag = \'' . $componentTag . '\';' . PHP_EOL
-                        . '?>' . PHP_EOL
-                        . $rawComponent->selfClosingCode . PHP_EOL
-                        . '<?php' . PHP_EOL
-                        . '$__rawComponentAttributes = $__previousRawComponentAttributes;' . PHP_EOL
-                        . '$__previousRawComponentAttributes = null;' . PHP_EOL
-                        . '?>' . PHP_EOL;
-                    */
                 }
 
                 return "<?php throw new \LogicException('The component [$componentTag] is not meant to be used with the self-closing tag syntax'); ?>";
