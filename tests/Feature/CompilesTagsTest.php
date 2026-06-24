@@ -107,6 +107,50 @@ test('it fails to compile self-closing tags when no self-tag code was registered
     expect($test->exception->getPrevious()->getMessage())->toMatch($regexNoClosingTag);
 });
 
+it('can compile nested exact components', function () {
+    \ErickComp\RawBladeComponents\RawComponent::rawComponent('x-nest-outer', '[OUTER-OPEN]', '[OUTER-CLOSE]');
+    \ErickComp\RawBladeComponents\RawComponent::rawComponent('x-nest-inner', '[INNER-OPEN]', '[INNER-CLOSE]');
+
+    $rendered = Blade::render(
+        '<x-nest-outer><x-nest-inner>content</x-nest-inner></x-nest-outer>',
+        deleteCachedView: true,
+    );
+
+    expect($rendered)->toContain('[OUTER-OPEN]');
+    expect($rendered)->toContain('[INNER-OPEN]content[INNER-CLOSE]');
+    expect($rendered)->toContain('[OUTER-CLOSE]');
+});
+
+it('can compile self-closing exact inside opening/closing exact', function () {
+    \ErickComp\RawBladeComponents\RawComponent::rawComponent('x-nest-wrap', '[WRAP-OPEN]', '[WRAP-CLOSE]');
+    \ErickComp\RawBladeComponents\RawComponent::rawComponent('x-nest-sc', '[SC-OPEN]', '[SC-CLOSE]', '[SC-SELF]');
+
+    $rendered = Blade::render(
+        '<x-nest-wrap>before<x-nest-sc />after</x-nest-wrap>',
+        deleteCachedView: true,
+    );
+
+    expect($rendered)->toContain('[WRAP-OPEN]');
+    expect($rendered)->toContain('before');
+    expect($rendered)->toContain('[SC-SELF]');
+    expect($rendered)->toContain('after');
+    expect($rendered)->toContain('[WRAP-CLOSE]');
+});
+
+it('can compile exact component nested inside prefix-component', function () {
+    \ErickComp\RawBladeComponents\RawComponent::rawComponent('x-nest-child', '[CHILD-OPEN]', '[CHILD-CLOSE]');
+    \ErickComp\RawBladeComponents\RawComponent::rawComponentStartingWith('x-nest-pfx', '[PFX-OPEN]', '[PFX-CLOSE]');
+
+    $rendered = Blade::render(
+        '<x-nest-pfx:abc><x-nest-child>content</x-nest-child></x-nest-pfx:abc>',
+        deleteCachedView: true,
+    );
+
+    expect($rendered)->toContain('[PFX-OPEN]');
+    expect($rendered)->toContain('[CHILD-OPEN]content[CHILD-CLOSE]');
+    expect($rendered)->toContain('[PFX-CLOSE]');
+});
+
 it('does not compile non-registered tags', function () {
     Blade::component(NonRegisteredRawComponent::class, 'non-registered-raw');
     $bladeStringWithNonRegisteredRawComponents = '<x-non-registered-raw></x-non-registered-raw> <x-non-registered-raw />';
