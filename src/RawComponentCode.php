@@ -5,10 +5,10 @@ namespace ErickComp\RawBladeComponents;
 class RawComponentCode
 {
     public function __construct(
-        public string $tag,
-        public string $openingCode,
-        public string $closingCode,
-        public ?string $selfClosingCode = null,
-        public array $defaultAttributes = [],
+        public readonly string $tag,
+        public readonly string $openingCode,
+        public readonly string $closingCode,
+        public readonly ?string $selfClosingCode = null,
+        public readonly array $defaultAttributes = [],
     ) {}
 }
