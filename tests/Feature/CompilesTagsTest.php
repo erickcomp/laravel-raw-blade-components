@@ -151,6 +151,18 @@ it('can compile exact component nested inside prefix-component', function () {
     expect($rendered)->toContain('[PFX-CLOSE]');
 });
 
+it('overwrites registration when same tag is registered twice', function () {
+    \ErickComp\RawBladeComponents\RawComponent::rawComponent('x-test-overwrite', '[FIRST-OPEN]', '[FIRST-CLOSE]');
+    \ErickComp\RawBladeComponents\RawComponent::rawComponent('x-test-overwrite', '[SECOND-OPEN]', '[SECOND-CLOSE]');
+
+    $rendered = Blade::render('<x-test-overwrite>content</x-test-overwrite>', deleteCachedView: true);
+
+    expect($rendered)->toContain('[SECOND-OPEN]');
+    expect($rendered)->toContain('[SECOND-CLOSE]');
+    expect($rendered)->not->toContain('[FIRST-OPEN]');
+    expect($rendered)->not->toContain('[FIRST-CLOSE]');
+});
+
 it('does not compile non-registered tags', function () {
     Blade::component(NonRegisteredRawComponent::class, 'non-registered-raw');
     $bladeStringWithNonRegisteredRawComponents = '<x-non-registered-raw></x-non-registered-raw> <x-non-registered-raw />';
