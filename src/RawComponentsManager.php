@@ -268,7 +268,10 @@ class RawComponentsManager
         foreach ($this->rawComponentsStartingWith as $componentStartingWith => $rawComponent) {
             if (\str_starts_with($componentTag, $componentStartingWith)) {
                 if (isset($rawComponent->selfClosingCode)) {
-                    $attributes = $this->getAttributesFromAttributeString($match['attributes']);
+                    $attributes = \array_merge(
+                        $rawComponent->defaultAttributes,
+                        $this->getAttributesFromAttributeString($match['attributes']),
+                    );
                     return <<<PHP_CODE
                             <?php
                             \$__rawComponentsStack ??= [];

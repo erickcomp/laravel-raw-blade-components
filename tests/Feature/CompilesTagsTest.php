@@ -44,6 +44,24 @@ it('can compile self-closing tags starting with', function () {
     );
 });
 
+it('merges default attributes on self-closing prefix-components', function () {
+    /** @var \ErickComp\RawBladeComponents\RawComponentsManager */
+    $manager = \ErickComp\RawBladeComponents\RawComponent::getFacadeRoot();
+
+    $manager->rawComponentStartingWith(
+        'x-test-sc-defaults',
+        '<open>',
+        '</close>',
+        'SELF-CLOSE-OUTPUT',
+        ['data-default' => "'yes'"],
+    );
+
+    $compiled = $manager->compileRawBladeComponents('<x-test-sc-defaults:foo />');
+    expect($compiled)->toContain("'data-default'");
+    expect($compiled)->toContain("'yes'");
+    expect($compiled)->toContain('SELF-CLOSE-OUTPUT');
+});
+
 test('it fails to compile self-closing tags when no self-tag code was registered', function () {
 
     $exception = null;
