@@ -98,7 +98,7 @@ class RawComponentsManager
 
         if ($this->rawComponents->has($componentTag)) {
             $attributes = \array_merge(
-                $this->rawComponents[$componentTag]->defaultAttributes,
+                $this->normalizeDefaultAttributes($this->rawComponents[$componentTag]->defaultAttributes),
                 $this->getAttributesFromAttributeString($match['attributes']),
             );
 
@@ -125,7 +125,7 @@ class RawComponentsManager
         foreach ($this->rawComponentsStartingWith as $componentStartingWith => $rawComponent) {
             if (\str_starts_with($componentTag, $componentStartingWith)) {
                 $attributes = \array_merge(
-                    $rawComponent->defaultAttributes,
+                    $this->normalizeDefaultAttributes($rawComponent->defaultAttributes),
                     $this->getAttributesFromAttributeString($match['attributes']),
                 );
                 $safePrefix = \addslashes($componentStartingWith);
@@ -188,7 +188,7 @@ class RawComponentsManager
         if ($this->rawComponents->has($componentTag)) {
             if (isset($this->rawComponents[$componentTag]->selfClosingCode)) {
                 $attributes = \array_merge(
-                    $this->rawComponents[$componentTag]->defaultAttributes,
+                    $this->normalizeDefaultAttributes($this->rawComponents[$componentTag]->defaultAttributes),
                     $this->getAttributesFromAttributeString($match['attributes']),
                 );
 
@@ -221,7 +221,7 @@ class RawComponentsManager
             if (\str_starts_with($componentTag, $componentStartingWith)) {
                 if (isset($rawComponent->selfClosingCode)) {
                     $attributes = \array_merge(
-                        $rawComponent->defaultAttributes,
+                        $this->normalizeDefaultAttributes($rawComponent->defaultAttributes),
                         $this->getAttributesFromAttributeString($match['attributes']),
                     );
                     $safePrefix = \addslashes($componentStartingWith);
@@ -352,6 +352,29 @@ class RawComponentsManager
                 )
             \/>
         /x";
+    }
+
+    protected function normalizeDefaultAttributes(array $defaultAttributes): array
+    {
+        $normalized = [];
+
+        foreach ($defaultAttributes as $key => $value) {
+            if (!\is_string($value) || $value === 'true' || \is_numeric($value)) {
+                $normalized[$key] = $value;
+                continue;
+            }
+
+            $firstChar = $value[0] ?? '';
+
+            if ($firstChar === "'" || $firstChar === '"' || $firstChar === '$') {
+                $normalized[$key] = $value;
+                continue;
+            }
+
+            $normalized[$key] = "'" . \addslashes($value) . "'";
+        }
+
+        return $normalized;
     }
 
     protected function getAttributesFromAttributeString(string $attributesString)
